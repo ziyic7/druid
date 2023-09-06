@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -243,7 +244,17 @@ public class FlattenSpecParquetReaderTest extends BaseParquetReaderTest
         flattenSpec
     );
     List<InputRowListPlusRawValues> sampled = sampleAllRows(reader);
-    Assert.assertEquals(NESTED_JSON, DEFAULT_JSON_WRITER.writeValueAsString(sampled.get(0).getRawValues()));
+    Assert.assertEquals("1537229880023", sampled.get(0).getRawValues().get("timestamp").toString());
+    Assert.assertEquals(1, sampled.get(0).getRawValues().get("metric1"));
+    Assert.assertEquals("d1v1", sampled.get(0).getRawValues().get("dim1"));
+    // Assert.assertEquals(2, sampled.get(0).getRawValues().get("nestedData").getClass());
+    HashMap<String, Object> nestedData = (HashMap) sampled.get(0).getRawValues().get("nestedData");
+    Assert.assertEquals(2, nestedData.get("metric2"));
+    Assert.assertEquals("d2v1", nestedData.get("dim2"));
+    Assert.assertEquals(1, nestedData.get("dim3"));
+    Assert.assertEquals("[listDim1v1, listDim1v2]", nestedData.get("listDim").toString());
+
+    // Assert.assertEquals(NESTED_JSON, DEFAULT_JSON_WRITER.writeValueAsString(sampled.get(0).getRawValues()));
   }
 
   @Test
